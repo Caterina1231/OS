@@ -22,16 +22,17 @@ int findOptimal(int pages[], int frames[], int n, int capacity, int index) {
 
 void optimalPageReplacement(int pages[], int n, int capacity) {
     int frames[capacity], faults = 0, hits = 0;
-
+     int referenceCount = 0;
     for (int i = 0; i < capacity; i++)
         frames[i] = -1;
 
     for (int i = 0; i < n; i++) {
         int found = 0;
-
+        referenceCount++;
         for (int j = 0; j < capacity; j++) {
             if (frames[j] == pages[i]) {
                 hits++;
+                printf("Page %d: HIT\n", pages[i]);
                 found = 1;
                 break;
             }
@@ -42,12 +43,15 @@ void optimalPageReplacement(int pages[], int n, int capacity) {
             for (int j = 0; j < capacity; j++) {
                 if (frames[j] == -1) {
                     pos = j;
+                    printf("Page %d: FAULT, placed in empty frame %d\n", pages[i], pos);
                     break;
                 }
             }
             if (pos == -1)
+            {
                 pos = findOptimal(pages, frames, n, capacity, i + 1);
-
+                printf("Page %d: FAULT, replaced page %d in frame %d\n", pages[i], frames[pos], pos);
+            }
             frames[pos] = pages[i];
             faults++;
         }
@@ -57,7 +61,7 @@ void optimalPageReplacement(int pages[], int n, int capacity) {
             frames[j] == -1 ? printf("- ") : printf("%d ", frames[j]);
         printf("\n");
     }
-
+    printf("\nTotal Page References: %d\n", referenceCount);
     printf("Total Page Faults: %d\n", faults);
     printf("Total Page Hits: %d\n", hits);
 }
